@@ -19,9 +19,6 @@ class WalletViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=['get'])
     def analytics(self, request):
         wallet = request.user.wallet
-        # Simple aggregation for the last 6 months (mock logic for prototype if not enough data, but let's try real)
-        # For prototype simplicity, we will return static data if no transactions, 
-        # or aggregate real transactions if they exist.
         
         income = Transaction.objects.filter(wallet=wallet, transaction_type='CREDIT').aggregate(Sum('amount'))['amount__sum'] or 0
         expenses = Transaction.objects.filter(wallet=wallet, transaction_type='DEBIT').aggregate(Sum('amount'))['amount__sum'] or 0
