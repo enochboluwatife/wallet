@@ -3,47 +3,53 @@ import { NavLink } from 'react-router-dom';
 import { FaHome, FaChartBar, FaCreditCard, FaUser, FaQrcode } from 'react-icons/fa';
 
 const BottomNav = () => {
+    // Nav items updated to match screenshot order/icons
     const navItems = [
-        { name: 'Home', icon: <FaHome size={20} />, path: '/' },
-        { name: 'Stats', icon: <FaChartBar size={20} />, path: '/statistics' },
-        // Center spacing for the floating button
-        { name: 'Scan', icon: <FaQrcode size={24} />, path: '/profile', isSpecial: true },
-        { name: 'Cards', icon: <FaCreditCard size={20} />, path: '/cards' },
-        { name: 'Profile', icon: <FaUser size={20} />, path: '/profile' },
+        { name: 'Home', icon: <FaHome size={24} />, path: '/' },
+        { name: 'Statistics', icon: <FaChartBar size={24} />, path: '/statistics' },
+        { name: 'Scan', icon: <FaQrcode size={28} />, path: '/scan', isSpecial: true },
+        { name: 'Cards', icon: <FaCreditCard size={24} />, path: '/cards' },
+        { name: 'Profile', icon: <FaUser size={24} />, path: '/profile' },
     ];
 
     return (
-        <div className="md:hidden fixed bottom-6 left-6 right-6 z-50">
-            <div className="bg-white rounded-[2rem] shadow-2xl px-6 py-4 flex justify-between items-center relative">
-                {navItems.map((item, index) => {
+        <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-6 pointer-events-none">
+            {/* 
+                Container: Floating rounded white bar. 
+                pointer-events-auto needed mainly on the bar to allow clicking through empty space if container is full width 
+            */}
+            <div className="bg-white rounded-[2.5rem] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] px-8 py-4 flex justify-between items-center w-[90%] max-w-md pointer-events-auto relative">
+
+                {navItems.map((item) => {
+                    // Special Central Button (Scan)
                     if (item.isSpecial) {
                         return (
-                            <div key={item.name} className="absolute left-1/2 -translate-x-1/2 -top-6">
-                                <NavLink to={item.path} className="w-16 h-16 bg-[#FFB039] rounded-full flex items-center justify-center text-gray-900 shadow-lg shadow-orange-200 border-4 border-[#F5F5F7]">
-                                    <span className="text-2xl">{item.icon}</span>
+                            <div key={item.name} className="relative -top-10">
+                                <NavLink
+                                    to={item.path}
+                                    className={({ isActive }) => `
+                                        w-16 h-16 rounded-[2rem] flex items-center justify-center transform transition-transform hover:scale-105 shadow-xl
+                                        bg-[#FFB039] text-gray-900
+                                    `}
+                                >
+                                    {/* Scan Icon Outline Style */}
+                                    <FaQrcode size={28} />
                                 </NavLink>
                             </div>
-                        )
+                        );
                     }
 
+                    // Standard Nav Items
                     return (
                         <NavLink
                             key={item.name}
                             to={item.path}
                             className={({ isActive }) =>
-                                `flex flex-col items-center gap-1 transition-all ${isActive ? 'text-[#434DDB]' : 'text-gray-800'
+                                `transition-colors duration-200 ${isActive ? 'text-[#434DDB]' : 'text-gray-300'
                                 }`
                             }
                         >
-                            <div className="relative py-2 px-2">
-                                {item.icon}
-                                <NavLink
-                                    to={item.path}
-                                    className={({ isActive }) =>
-                                        `absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-[#434DDB] rounded-t-full transition-opacity ${isActive ? 'opacity-100' : 'opacity-0'}`
-                                    }
-                                />
-                            </div>
+                            {item.icon}
                         </NavLink>
                     );
                 })}

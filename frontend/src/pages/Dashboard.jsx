@@ -8,10 +8,10 @@ const Dashboard = () => {
     const [walletData, setWalletData] = useState(null);
     const [activities, setActivities] = useState([]);
 
-    // Mock Data
+    // Mock Data for Savings
     const savings = [
-        { id: 1, name: 'New car', target: 20000, current: 5000, icon: <FaCar /> },
-        { id: 2, name: 'New House', target: 500000, current: 20000, icon: <FaHome /> },
+        { id: 1, name: 'New car', target: 20000, current: 5000, icon: <FaCar />, color: 'green' },
+        { id: 2, name: 'New House', target: 500000, current: 20000, icon: <FaHome />, color: 'brand' },
     ];
 
     useEffect(() => {
@@ -32,92 +32,103 @@ const Dashboard = () => {
     }, []);
 
     return (
-        <div className="space-y-6 max-w-md mx-auto md:max-w-full">
-            {/* Top Header Section */}
-            <div className="flex justify-between items-start">
+        <div className="space-y-8">
+            {/* Header Section */}
+            <header className="flex justify-between items-start pt-2">
                 <div>
-                    <p className="text-gray-500 text-sm font-medium mb-1">Total Balance</p>
-                    <div className="flex items-center gap-3">
-                        <h1 className="text-3xl font-extrabold text-gray-900">
-                            {showBalance ? `${walletData?.currency || ''} ${Number(walletData?.balance || 0).toLocaleString()} ` : '••••••••'}
-                        </h1>
-                        <button onClick={() => setShowBalance(!showBalance)} className="text-gray-400 hover:text-brand-primary">
-                            {showBalance ? <FaEye size={20} /> : <FaEyeSlash size={20} />}
+                    <div className="flex items-center gap-2 text-gray-500 mb-1">
+                        <span className="text-sm font-medium">Total Balance</span>
+                        <button onClick={() => setShowBalance(!showBalance)} className="hover:text-brand-primary">
+                            {showBalance ? <FaEye size={14} /> : <FaEyeSlash size={14} />}
                         </button>
                     </div>
+                    <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
+                        {showBalance ? `${walletData?.currency || '$'}${Number(walletData?.balance || 0).toLocaleString()}` : '••••••••'}
+                    </h1>
                 </div>
-                <button className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition-colors relative">
+                <button className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors">
                     <FaBell size={24} />
-                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                    {/* Notification Dot */}
+                    <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-[#F5F5F7]"></span>
                 </button>
-            </div>
+            </header>
 
-            {/* Blue Card Section */}
+            {/* Wallet Card */}
             <section>
                 <WalletCard
                     cardNumber="XXXX XXXX XXXX XXXX"
                     cardHolder="John Doe"
+                    variant="blue"
                 />
             </section>
 
             {/* Action Buttons */}
-            <section className="flex justify-between gap-3">
-                <ActionButton icon={<FaPlus />} label="Add money" active={true} />
+            <section className="grid grid-cols-3 gap-4">
+                <ActionButton icon={<FaPlus />} label="Add money" />
                 <ActionButton icon={<FaExchangeAlt />} label="Transfer" />
                 <ActionButton icon={<FaChartPie />} label="Budget" />
             </section>
 
             {/* Recent Activities */}
-            <section className="mt-8">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-700 text-lg">Recent activities</h3>
-                    <button className="text-sm text-gray-500 hover:text-brand-primary">View All</button>
+            <section>
+                <div className="flex justify-between items-end mb-4">
+                    <h3 className="text-lg font-bold text-gray-800">Recent activities</h3>
+                    <button className="text-xs text-brand-primary font-medium hover:underline">View All</button>
                 </div>
-                <div className="space-y-3">
-                    {activities.map(item => (
-                        <div key={item.id} className="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-gray-50">
+
+                <div className="space-y-4">
+                    {activities.length > 0 ? activities.slice(0, 3).map(item => (
+                        <div key={item.id} className="bg-white p-4 rounded-3xl shadow-sm flex justify-between items-center group hover:shadow-md transition-shadow">
                             <div className="flex items-center gap-4">
-                                <div className={`w - 12 h - 12 rounded - xl flex items - center justify - center font - bold text - xl shadow - sm ${item.transaction_type === 'DEBIT' ? 'bg-black text-red-600' : 'bg-green-100 text-green-600'} `}>
-                                    {item.description ? item.description.charAt(0) : '?'}
+                                {/* Icon Box */}
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-sm
+                                    ${getServiceColor(item.description)}
+                                `}>
+                                    {getServiceIcon(item.description)}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-gray-800">{item.description}</p>
-                                    <p className="text-xs text-gray-400 mt-1">{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {item.category}</p>
+                                    <p className="font-bold text-gray-900 text-sm mb-0.5">{item.description}</p>
+                                    <p className="text-xs text-gray-400">{new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • Payment Received</p>
                                 </div>
                             </div>
-                            <span className={`font - bold text - sm ${item.transaction_type === 'DEBIT' ? 'text-red-500' : 'text-green-500'} `}>
-                                {item.transaction_type === 'DEBIT' ? '-' : '+'} {walletData.currency} {item.amount}
+                            <span className={`font-bold text-sm ${item.transaction_type === 'DEBIT' ? 'text-[#EB001B]' : 'text-green-500'}`}>
+                                {item.transaction_type === 'DEBIT' ? '-' : '+'}USD {item.amount}
                             </span>
                         </div>
-                    ))}
-                    {activities.length === 0 && <p className="text-gray-400 text-center py-4">No recent activities</p>}
+                    )) : (
+                        <div className="text-center py-8 text-gray-400 text-sm">No recent transactions</div>
+                    )}
                 </div>
             </section>
 
             {/* Savings Plans */}
-            <section className="mt-8">
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-700 text-lg">My savings plans</h3>
-                    <button className="text-sm text-gray-500 hover:text-brand-primary">View All</button>
+            <section>
+                <div className="flex justify-between items-end mb-4">
+                    <h3 className="text-lg font-bold text-gray-800">My savings plans</h3>
+                    <button className="text-xs text-brand-primary font-medium hover:underline">View All</button>
                 </div>
-                <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+
+                <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar snap-x">
                     {savings.map(plan => (
-                        <div key={plan.id} className="min-w-[160px] bg-gray-100/80 p-5 rounded-3xl flex flex-col justify-between h-40">
+                        <div key={plan.id} className="min-w-[150px] bg-white p-4 rounded-3xl shadow-sm h-44 flex flex-col justify-between snap-start">
                             <div className="flex justify-between items-start">
-                                <div className={`p - 3 rounded - xl text - xl ${plan.name.includes('car') ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-brand-primary'} `}>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg
+                                    ${plan.color === 'green' ? 'bg-green-100 text-green-600' : 'bg-[#EBF1FF] text-[#434DDB]'}
+                                `}>
                                     {plan.icon}
                                 </div>
-                                <span className="text-gray-400 font-bold">{'>'}</span>
+                                <span className="text-gray-300 font-bold text-xs">{'>'}</span>
                             </div>
                             <div>
-                                <p className="font-bold text-gray-800 mb-1">{plan.name}</p>
-                                <p className="text-sm text-gray-500">${plan.current.toLocaleString()}</p>
+                                <p className="font-bold text-gray-800 text-sm mb-1">{plan.name}</p>
+                                <p className="text-xs text-gray-400 font-medium">${plan.current.toLocaleString()}</p>
                             </div>
                         </div>
                     ))}
-                    {/* Add new saving card */}
-                    <div className="min-w-[100px] flex items-center justify-center">
-                        <button className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-brand-primary hover:scale-110 transition-all">
+
+                    {/* Add New Button */}
+                    <div className="min-w-[80px] flex items-center justify-center snap-start">
+                        <button className="w-12 h-12 bg-[#FFB039] rounded-full flex items-center justify-center text-gray-900 shadow-lg shadow-orange-200 hover:scale-110 transition-transform">
                             <FaPlus />
                         </button>
                     </div>
@@ -127,15 +138,29 @@ const Dashboard = () => {
     );
 };
 
-const ActionButton = ({ icon, label, active }) => (
-    <button className={`flex - 1 py - 3 px - 2 rounded - xl flex items - center justify - center gap - 2 transition - all shadow - sm
-        ${active
-            ? 'bg-brand-primary text-white shadow-brand-primary/30'
-            : 'bg-[#5B86E5] text-white' // Using the specific blue from buttons in screenshot
-        } `}>
-        {icon}
-        <span className="font-medium text-xs whitespace-nowrap">{label}</span>
+// Helper for Action Buttons
+const ActionButton = ({ icon, label }) => (
+    <button className="bg-[#5B86E5] text-white py-3 px-2 rounded-2xl flex items-center justify-center gap-2 shadow-lg shadow-blue-200 hover:bg-[#4a75d4] transition-colors">
+        <span className="text-sm">{icon}</span>
+        <span className="font-medium text-xs tracking-wide">{label}</span>
     </button>
 );
+
+// Helpers for Service Icons/Colors (Mock logic based on screenshot)
+const getServiceIcon = (desc) => {
+    const d = desc?.toLowerCase() || '';
+    if (d.includes('netflix')) return <span className="font-serif text-red-600 font-bold">N</span>;
+    if (d.includes('amazon')) return <span className="font-bold text-gray-800">a</span>;
+    if (d.includes('canva')) return <span className="font-cursive text-white text-xs">Ca</span>;
+    return <span className="text-gray-500">?</span>;
+};
+
+const getServiceColor = (desc) => {
+    const d = desc?.toLowerCase() || '';
+    if (d.includes('netflix')) return 'bg-black';
+    if (d.includes('amazon')) return 'bg-white border border-gray-100';
+    if (d.includes('canva')) return 'bg-black';
+    return 'bg-gray-100';
+};
 
 export default Dashboard;
