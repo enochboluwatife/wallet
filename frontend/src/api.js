@@ -5,7 +5,6 @@ const api = axios.create({
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ZGVqaTpIanVqYQ==' // Basic auth for dev (deji:password) in base64. Note: In real app use JWT/Token.
     }
 });
 
