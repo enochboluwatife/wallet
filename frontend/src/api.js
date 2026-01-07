@@ -8,8 +8,6 @@ const api = axios.create({
     }
 });
 
-// Since we are mocking auth for prototype, we'll hardcode the basic auth header or login flow.
-// For this prototype, I'll update the interceptor to add auth if we implement login.
-// For now, let's assume we use the mock user.
+
 
 export default api;

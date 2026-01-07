@@ -97,25 +97,4 @@ class QRCodeView(views.APIView):
         else:
              return Response({'status': 'error', 'message': 'Insufficient funds'}, status=status.HTTP_400_BAD_REQUEST)
 
-class MockDataView(views.APIView):
-    permission_classes = [AllowAny] # Open for prototype ease
 
-    def post(self, request):
-        # Create a default user and wallet if not exists
-        user, created = User.objects.get_or_create(username='deji', email='deji@teggare.com')
-        if created:
-            user.set_password('password')
-            user.save()
-            wallet = Wallet.objects.create(user=user, balance=8899750.00, currency='USD')
-             # Create Cards
-            Card.objects.create(wallet=wallet, bank_name='Zenith Bank', card_number='1234567812345678', card_holder='John Doe', expiry_date='12/25', cvv='123', card_type='VISA')
-            Card.objects.create(wallet=wallet, bank_name='GTBank', card_number='8765432187654321', card_holder='John Doe', expiry_date='11/24', cvv='456', card_type='MASTERCARD')
-            # Create Transactions
-            Transaction.objects.create(wallet=wallet, amount=10.99, transaction_type='DEBIT', description='Netflix Subscription', category='Subscription', sender='Self', receiver='Netflix')
-            Transaction.objects.create(wallet=wallet, amount=10.99, transaction_type='DEBIT', description='Amazon Subscription', category='Subscription', sender='Self', receiver='Amazon')
-            Transaction.objects.create(wallet=wallet, amount=10.99, transaction_type='DEBIT', description='Canva Subscription', category='Subscription', sender='Self', receiver='Canva')
-            # Savings
-            Savings.objects.create(wallet=wallet, goal_name='New car', target_amount=25000, current_amount=5000, icon='car')
-            Savings.objects.create(wallet=wallet, goal_name='New House', target_amount=500000, current_amount=20000, icon='home')
-
-        return Response({'status': 'seeded', 'username': 'deji', 'password': 'password'})
